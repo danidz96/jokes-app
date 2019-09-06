@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './JokesList.css';
 
 const JokesList = (props) => {
-	// const [ joke, setJoke ] = useState('');
 	const [ isLoading, setIsLoading ] = useState(false);
 	const [ url, setUrl ] = useState('https://geek-jokes.sameerkumar.website/api');
 	const [ jokesList, setJokesList ] = useState([]);
@@ -31,10 +31,19 @@ const JokesList = (props) => {
 	);
 
 	return (
-		<React.Fragment>
-			<h1>Geek Jokes</h1>
-			{jokesList.map((joke, index) => <p key={index}>{joke}</p>)}
-		</React.Fragment>
+		<div className="jokesList">
+			<div className="jokesList-sidebar">
+				<h1 className="jokesList-title">
+					<span>Geek</span> Jokes
+				</h1>
+				<img
+					src="https://assets.dryicons.com/uploads/icon/svg/8927/0eb14c71-38f2-433a-bfc8-23d9c99b3647.svg"
+					alt="Smiley Face"
+				/>
+				<button className="jokesList-getMore">New Jokes</button>
+			</div>
+			<div className="jokesList-jokes">{jokesList.map((joke, index) => <p key={index}>{joke}</p>)}</div>
+		</div>
 	);
 };
 
