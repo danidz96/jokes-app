@@ -8,31 +8,33 @@ import './JokesList.css';
 const JokesList = (props) => {
 	const [ isLoading, setIsLoading ] = useState(false);
 	const [ url, setUrl ] = useState('https://geek-jokes.sameerkumar.website/api');
-	const [ jokesList, setJokesList ] = useLocalStorage('jokes', []);
+	const [ jokesLS, setJokesLS ] = useLocalStorage('jokes', []);
+	const [ jokesList, setJokesList ] = useState(jokesLS || []);
 
-	const fetchData = async () => {
+	useEffect(
+		() => {
+			if (jokesList.length === 0) {
+				getJokes();
+			}
+		},
+		[ url, props.numJokesToGet ]
+	);
+
+	const getJokes = async () => {
 		setIsLoading(true);
 		try {
-			let jokesList = [];
-			while (jokesList.length < props.numJokesToGet) {
+			let newJokes = [];
+			while (newJokes.length < props.numJokesToGet) {
 				const result = await axios.get(url);
-				jokesList.push({ id: uuid(), text: result.data, votes: 0 });
+				newJokes.push({ id: uuid(), text: result.data, votes: 0 });
 			}
-			setJokesList(jokesList);
+			setJokesList([ ...jokesList, ...newJokes ]);
+			jokesList.length !== 0 ? setJokesLS(jokesList.slice(0, 10)) : setJokesLS(newJokes);
 			setIsLoading(false);
 		} catch (error) {
 			console.log(error);
 		}
 	};
-
-	useEffect(
-		() => {
-			if (jokesList.length === 0) {
-				fetchData();
-			}
-		},
-		[ url, props.numJokesToGet ]
-	);
 
 	const handleVote = (id, number) => {
 		const updatedJokesList = jokesList.map(
@@ -40,6 +42,11 @@ const JokesList = (props) => {
 		);
 
 		setJokesList(updatedJokesList);
+		setJokesLS(updatedJokesList.slice(0, 10));
+	};
+
+	const handleClick = () => {
+		getJokes();
 	};
 
 	return (
@@ -52,9 +59,12 @@ const JokesList = (props) => {
 					src="https://assets.dryicons.com/uploads/icon/svg/8927/0eb14c71-38f2-433a-bfc8-23d9c99b3647.svg"
 					alt="Smiley Face"
 				/>
-				<button className="jokesList-getMore">New Jokes</button>
+				<button className="jokesList-getMore" onClick={handleClick}>
+					New Jokes
+				</button>
 			</div>
 			<div className="jokesList-jokes">
+				{isLoading && <span>Loading...</span>}
 				{jokesList.map((joke) => (
 					<Joke
 						key={joke.id}
