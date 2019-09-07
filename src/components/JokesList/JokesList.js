@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Joke from '../Joke/Joke';
 import './JokesList.css';
 
 const JokesList = (props) => {
@@ -16,7 +17,7 @@ const JokesList = (props) => {
 					let jokesList = [];
 					while (jokesList.length < props.numJokesToGet) {
 						const result = await axios.get(url);
-						jokesList.push(result.data);
+						jokesList.push({ text: result.data, votes: 0 });
 					}
 					setJokesList(jokesList);
 					setIsLoading(false);
@@ -42,7 +43,9 @@ const JokesList = (props) => {
 				/>
 				<button className="jokesList-getMore">New Jokes</button>
 			</div>
-			<div className="jokesList-jokes">{jokesList.map((joke, index) => <p key={index}>{joke}</p>)}</div>
+			<div className="jokesList-jokes">
+				{jokesList.map((joke, index) => <Joke key={index} text={joke.text} votes={joke.votes} />)}
+			</div>
 		</div>
 	);
 };
