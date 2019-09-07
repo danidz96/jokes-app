@@ -2,32 +2,34 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import uuid from 'uuid/v4';
 import Joke from '../Joke/Joke';
+import useLocalStorage from '../../hooks/useLocalStorage';
 import './JokesList.css';
 
 const JokesList = (props) => {
 	const [ isLoading, setIsLoading ] = useState(false);
 	const [ url, setUrl ] = useState('https://geek-jokes.sameerkumar.website/api');
-	const [ jokesList, setJokesList ] = useState([]);
+	const [ jokesList, setJokesList ] = useLocalStorage('jokes', []);
+
+	const fetchData = async () => {
+		setIsLoading(true);
+		try {
+			let jokesList = [];
+			while (jokesList.length < props.numJokesToGet) {
+				const result = await axios.get(url);
+				jokesList.push({ id: uuid(), text: result.data, votes: 0 });
+			}
+			setJokesList(jokesList);
+			setIsLoading(false);
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	useEffect(
 		() => {
-			const fetchData = async () => {
-				setIsLoading(true);
-
-				try {
-					let jokesList = [];
-					while (jokesList.length < props.numJokesToGet) {
-						const result = await axios.get(url);
-						jokesList.push({ id: uuid(), text: result.data, votes: 0 });
-					}
-					setJokesList(jokesList);
-					setIsLoading(false);
-				} catch (error) {
-					console.log(error);
-				}
-			};
-
-			fetchData();
+			if (jokesList.length === 0) {
+				fetchData();
+			}
 		},
 		[ url, props.numJokesToGet ]
 	);
