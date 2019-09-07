@@ -32,6 +32,14 @@ const JokesList = (props) => {
 		[ url, props.numJokesToGet ]
 	);
 
+	const handleVote = (id, number) => {
+		const updatedJokesList = jokesList.map(
+			(joke) => (joke.id === id ? { ...joke, votes: joke.votes + number } : joke)
+		);
+
+		setJokesList(updatedJokesList);
+	};
+
 	return (
 		<div className="jokesList">
 			<div className="jokesList-sidebar">
@@ -45,7 +53,15 @@ const JokesList = (props) => {
 				<button className="jokesList-getMore">New Jokes</button>
 			</div>
 			<div className="jokesList-jokes">
-				{jokesList.map((joke) => <Joke key={joke.id} text={joke.text} votes={joke.votes} />)}
+				{jokesList.map((joke) => (
+					<Joke
+						key={joke.id}
+						text={joke.text}
+						votes={joke.votes}
+						upvote={() => handleVote(joke.id, 1)}
+						downvote={() => handleVote(joke.id, -1)}
+					/>
+				))}
 			</div>
 		</div>
 	);
