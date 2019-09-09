@@ -64,7 +64,12 @@ const JokesList = (props) => {
 				</button>
 			</div>
 			<div className="jokesList-jokes">
-				{isLoading && <span>Loading...</span>}
+				{isLoading && (
+					<div className="jokesList-spinner">
+						<i className="far fa-8x fa-laugh fa-spin" />
+						<h1 className="jokesList-spinner-text">Loading...</h1>
+					</div>
+				)}
 				{jokesList.map((joke) => (
 					<Joke
 						key={joke.id}
