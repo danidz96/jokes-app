@@ -11,6 +11,8 @@ const JokesList = (props) => {
 	const [ jokesLS, setJokesLS ] = useLocalStorage('jokes', []);
 	const [ jokesList, setJokesList ] = useState(jokesLS || []);
 
+	const seenJokes = new Set(jokesList.map((joke) => joke.text));
+
 	useEffect(
 		() => {
 			if (jokesList.length === 0) {
@@ -21,12 +23,16 @@ const JokesList = (props) => {
 	);
 
 	const getJokes = async () => {
+		console.log(seenJokes);
 		setIsLoading(true);
 		try {
 			let newJokes = [];
 			while (newJokes.length < props.numJokesToGet) {
 				const result = await axios.get(url);
-				newJokes.push({ id: uuid(), text: result.data, votes: 0 });
+				const newJoke = result.data;
+				if (!seenJokes.has(newJoke)) {
+					newJokes.push({ id: uuid(), text: result.data, votes: 0 });
+				}
 			}
 			setJokesList([ ...jokesList, ...newJokes ]);
 			jokesList.length !== 0 ? setJokesLS(jokesList.slice(0, 10)) : setJokesLS(newJokes);
