@@ -48,7 +48,7 @@ const JokesList = (props) => {
 		);
 
 		setJokesList(updatedJokesList.sort((a, b) => b.votes - a.votes));
-		setJokesLS(updatedJokesList.slice(0, 10));
+		setJokesLS(updatedJokesList);
 	};
 
 	const handleClick = () => {
