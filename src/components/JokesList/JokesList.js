@@ -47,7 +47,7 @@ const JokesList = (props) => {
 			(joke) => (joke.id === id ? { ...joke, votes: joke.votes + number } : joke)
 		);
 
-		setJokesList(updatedJokesList);
+		setJokesList(updatedJokesList.sort((a, b) => b.votes - a.votes));
 		setJokesLS(updatedJokesList.slice(0, 10));
 	};
 
